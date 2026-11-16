@@ -16,4 +16,4 @@ https://raw.githubusercontent.com/o6ash/wg-sub/main/subscription_base64.txt
 https://raw.githubusercontent.com/o6ash/wg-sub/main/subscription.txt
 ```
 
-منبع فعلی کانال عمومی ConfigWireguard است. لینک‌ها مال همان کانال‌اند، نه سرور خودمان. تازه‌سازی از همین ماشین انجام می‌شود، چون خواندن فایل‌های کانال سشن تلگرام می‌خواهد و آن سشن داخل ریپو نیست.
+منبع این نسخه تاپیک Wireguard Config در گروه v2raycollectorgroup است، پست‌های ۱۴ تا ۱۶ نوامبر ۲۰۲۶. همان کانفیگ‌ها از ConfigWireguard ریپست می‌شوند. تازه‌سازی از همین ماشین انجام می‌شود، چون خواندن تاپیک سشن تلگرام می‌خواهد و آن سشن داخل ریپو نیست.

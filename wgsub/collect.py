@@ -68,6 +68,53 @@ def load_env(path: str) -> dict[str, str]:
     return env
 
 
+async def collect_topic(
+    api_id: int,
+    api_hash: str,
+    session: str,
+    group: str,
+    topic_id: int,
+    since,
+    limit: int = 400,
+) -> list[Profile]:
+    from telethon import TelegramClient
+    from telethon.sessions import StringSession
+
+    client = TelegramClient(StringSession(session), api_id, api_hash)
+    await client.connect()
+    try:
+        entity = await client.get_entity(group)
+        hits: list[Hit] = []
+        seen = set()
+        async for message in client.iter_messages(entity, reply_to=topic_id, limit=limit):
+            if message.date < since:
+                break
+            blobs = []
+            if message.message:
+                blobs.append((message.message, ""))
+            if message.file and message.file.name:
+                suffix = Path(message.file.name).suffix.lower()
+                if suffix in {".conf", ".txt", ".ini"}:
+                    try:
+                        data = await client.download_media(message, bytes)
+                    except Exception:
+                        data = None
+                    if data:
+                        blobs.append((data.decode("utf-8", "replace"), Path(message.file.name).stem))
+            for text, fallback in blobs:
+                for profile in parse_blob(text, fallback):
+                    key = profile.identity()
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    if not profile.name and fallback:
+                        profile.name = fallback
+                    hits.append(Hit(profile, message.id))
+        return [hit.profile for hit in hits]
+    finally:
+        await client.disconnect()
+
+
 def collect(env_path: str, channel: str, limit: int, cap: int) -> list[Profile]:
     env = load_env(env_path)
     return asyncio.run(
